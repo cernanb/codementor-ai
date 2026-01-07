@@ -5,19 +5,64 @@
   --font-mono: "JetBrains Mono", monospace;
   --font-display: "Space Mono", monospace;
 
-  /* Colors */
+  /* Base Colors */
   --color-background: #0d1117;
   --color-surface: #161b22;
+  --color-border: #30363d;
+
+  /* Text Colors */
+  --color-text: #c9d1d9;
+  --color-text-muted: #8b949e;
+  --color-text-inverse: #0d1117;
+
+  /* Semantic Colors */
   --color-primary: #58a6ff;
+  --color-primary-hover: #539bf5;
   --color-success: #3fb950;
+  --color-success-muted: #238636;
   --color-error: #f85149;
+  --color-error-muted: #da3633;
   --color-warning: #d29922;
+  --color-warning-muted: #9e6a03;
+
+  /* Component Colors */
+  --color-card: #161b22;
+  --color-card-hover: #1c2128;
+  --color-input: #0d1117;
+  --color-input-border: #30363d;
+  --color-code-bg: #0d1117;
+
+  /* Badge Colors */
+  --color-badge-easy: #238636;
+  --color-badge-medium: #d29922;
+  --color-badge-hard: #da3633;
+
+  /* Radius */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+
+  /* Spacing (for consistent gaps) */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.5);
 
   /* Animations */
   --animate-fade-in: fade-in 0.3s ease-out;
   --animate-slide-in: slide-in 0.3s ease-out;
+  --animate-slide-up: slide-up 0.3s ease-out;
+  --animate-scale-in: scale-in 0.2s ease-out;
+  --animate-pulse: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
+/* Keyframe Animations */
 @keyframes fade-in {
   from {
     opacity: 0;
@@ -36,4 +81,138 @@
   to {
     transform: translateX(0);
   }
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Custom Scrollbar for Terminal Aesthetic */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #30363d #0d1117;
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: #0d1117;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: #30363d;
+  border-radius: 4px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: #484f58;
+}
+
+/* Selection Color */
+::selection {
+  background-color: #58a6ff;
+  color: #0d1117;
+}
+
+/* Base Styles */
+body {
+  background-color: var(--color-background);
+  color: var(--color-text);
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+/* Code Blocks */
+code {
+  font-family: var(--font-mono);
+  background-color: var(--color-surface);
+  padding: 0.125rem 0.375rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.875em;
+}
+
+pre code {
+  padding: 0;
+  background-color: transparent;
+}
+
+/* Focus Styles for Accessibility */
+*:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Utility Classes */
+.text-gradient {
+  background: linear-gradient(
+    135deg,
+    var(--color-primary) 0%,
+    var(--color-success) 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.glass-effect {
+  background: rgba(22, 27, 34, 0.8);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(48, 54, 61, 0.5);
+}
+
+/* Test Result Colors */
+.test-pass {
+  color: var(--color-success);
+}
+
+.test-fail {
+  color: var(--color-error);
+}
+
+/* Monaco Editor Container */
+.monaco-editor-container {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+/* Loading Spinner */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.spinner {
+  animation: spin 1s linear infinite;
 }
