@@ -256,19 +256,29 @@ function parseConfig<T>(raw: unknown, schema: Schema<T>): T {
   3
 );
 
--- Add a demo user for testing (password: demo123)
--- Note: In production, you'd create this through Supabase Auth UI or API
--- This is just for reference
-INSERT INTO auth.users (
-  id,
-  email,
-  encrypted_password,
-  email_confirmed_at,
-  raw_user_meta_data
-) VALUES (
-  '00000000-0000-0000-0000-000000000001',
-  'demo@codementor.dev',
-  crypt('demo123', gen_salt('bf')),
-  NOW(),
-  '{"username": "demo_user"}'::jsonb
-) ON CONFLICT DO NOTHING;
+-- =============================================================================
+-- CREATING TEST USERS
+-- =============================================================================
+-- Supabase Auth users cannot be seeded via SQL. Create test users using:
+--
+-- Option 1: Supabase Dashboard
+--   1. Go to Authentication > Users in your Supabase project
+--   2. Click "Add user" > "Create new user"
+--   3. Enter email: demo@codementor.dev, password: demo123
+--   4. The profile will be auto-created via the handle_new_user() trigger
+--
+-- Option 2: Supabase Auth API (in your app code)
+--   const { data, error } = await supabase.auth.signUp({
+--     email: 'demo@codementor.dev',
+--     password: 'demo123',
+--     options: { data: { username: 'demo_user' } }
+--   });
+--
+-- Option 3: Supabase Admin API (requires service role key)
+--   const { data, error } = await supabase.auth.admin.createUser({
+--     email: 'demo@codementor.dev',
+--     password: 'demo123',
+--     email_confirm: true,
+--     user_metadata: { username: 'demo_user' }
+--   });
+-- =============================================================================
