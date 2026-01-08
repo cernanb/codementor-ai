@@ -3,6 +3,7 @@
 -- Challenge 1: FizzBuzz (Easy - Python)
 INSERT INTO challenges (
   title,
+  function_name,
   description,
   difficulty,
   language,
@@ -13,6 +14,7 @@ INSERT INTO challenges (
   order_index
 ) VALUES (
   'FizzBuzz Classic',
+  'fizzbuzz',
   'Write a function that returns "Fizz" for multiples of 3, "Buzz" for multiples of 5, "FizzBuzz" for multiples of both, and the number as a string otherwise.
 
 ## Requirements
@@ -61,6 +63,7 @@ fizzbuzz(7)  → "7"
 -- Challenge 2: Array Sum of Two (Medium - JavaScript)
 INSERT INTO challenges (
   title,
+  function_name,
   description,
   difficulty,
   language,
@@ -71,6 +74,7 @@ INSERT INTO challenges (
   order_index
 ) VALUES (
   'Two Sum Problem',
+  'twoSum',
   'Given an array of integers and a target sum, return the indices of two numbers that add up to the target. You may assume each input has exactly one solution.
 
 ## Requirements
@@ -123,6 +127,7 @@ twoSum([3, 2, 4], 6)       → [1, 2]  // nums[1] + nums[2] = 2 + 4 = 6
 -- Challenge 3: Type-Safe Config Parser (Hard - TypeScript)
 INSERT INTO challenges (
   title,
+  function_name,
   description,
   difficulty,
   language,
@@ -133,6 +138,7 @@ INSERT INTO challenges (
   order_index
 ) VALUES (
   'Generic Config Parser',
+  'parseConfig',
   'Create a type-safe configuration parser that validates and transforms config objects. Use TypeScript generics to ensure type safety.
 
 ## Requirements

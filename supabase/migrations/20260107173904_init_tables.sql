@@ -37,6 +37,7 @@ CREATE TABLE IF NOT EXISTS challenges (
   solution_code TEXT NOT NULL,
   test_cases JSONB NOT NULL,
   hints JSONB,
+  function_name TEXT NOT NULL,
   order_index INTEGER,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
