@@ -5,10 +5,6 @@ import { LogoutButton } from "@/components/LogoutButton";
 export default async function DashboardPage() {
   const supabase = await createClient();
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
   const { data: challenges } = await supabase
     .from("challenges")
     .select(
