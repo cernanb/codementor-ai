@@ -2,7 +2,7 @@ const PISTON_URL = process.env.PISTON_URL || "http://localhost:2000";
 
 export const LANGUAGES = {
   python: { language: "python", version: "3.10.0" },
-  javascript: { language: "javascript", version: "18.15.0" },
+  javascript: { language: "javascript", version: "20.11.1" },
   typescript: { language: "typescript", version: "5.0.3" },
 } as const;
 
@@ -49,7 +49,9 @@ export async function executeCode(
   });
 
   if (!response.ok) {
-    throw new Error(`Piston API error: ${response.status} ${response.statusText}`);
+    throw new Error(
+      `Piston API error: ${response.status} ${response.statusText}`
+    );
   }
 
   const result: PistonResponse = await response.json();
