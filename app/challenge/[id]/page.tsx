@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { CodeEditor } from "@/components/CodeEditor";
 import { Badge } from "@/components/ui/badge";
 import { notFound } from "next/navigation";
+import Link from "next/link";
 import Markdown from "react-markdown";
 export default async function ChallengePage({
   params,
@@ -21,6 +22,12 @@ export default async function ChallengePage({
     <div className="h-screen flex">
       <aside className="w-96 bg-slate-900 border-r border-slate-800 overflow-y-auto">
         <div className="p-6">
+          <Link
+            href="/dashboard"
+            className="text-[var(--color-text-muted)] hover:text-[var(--color-primary)] text-sm flex items-center gap-2 mb-4 transition-colors"
+          >
+            ← Back to Dashboard
+          </Link>
           <h1 className="font-display text-2xl text-white mb-4">
             {challenge.title}
           </h1>
