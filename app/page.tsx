@@ -1,6 +1,13 @@
 import Link from "next/link";
+import { createClient } from "@/lib/supabase/server";
+import { LogoutButton } from "@/components/LogoutButton";
 
-export default function Home() {
+export default async function Home() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const isLoggedIn = !!user;
   return (
     <div className="min-h-screen bg-[var(--color-background)]">
       {/* Navigation */}
@@ -11,18 +18,32 @@ export default function Home() {
             <span className="text-[var(--color-success)]">_</span>
           </Link>
           <div className="flex items-center gap-4">
-            <Link
-              href="/login"
-              className="text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition-colors text-sm"
-            >
-              Log in
-            </Link>
-            <Link
-              href="/signup"
-              className="bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-[var(--color-text-inverse)] px-4 py-2 rounded-[var(--radius-md)] text-sm font-medium transition-colors"
-            >
-              Get Started
-            </Link>
+            {isLoggedIn ? (
+              <>
+                <Link
+                  href="/dashboard"
+                  className="text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition-colors text-sm"
+                >
+                  Dashboard
+                </Link>
+                <LogoutButton />
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/login"
+                  className="text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition-colors text-sm"
+                >
+                  Log in
+                </Link>
+                <Link
+                  href="/signup"
+                  className="bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-[var(--color-text-inverse)] px-4 py-2 rounded-[var(--radius-md)] text-sm font-medium transition-colors"
+                >
+                  Get Started
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </nav>
@@ -53,18 +74,29 @@ export default function Home() {
 
           {/* CTAs */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 motion-safe:animate-[var(--animate-slide-up)]">
-            <Link
-              href="/signup"
-              className="bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-[var(--color-text-inverse)] px-8 py-3 rounded-[var(--radius-md)] font-medium transition-colors w-full sm:w-auto"
-            >
-              Start Learning Free
-            </Link>
-            <Link
-              href="/login"
-              className="border border-[var(--color-border)] text-[var(--color-text)] hover:bg-[var(--color-surface)] px-8 py-3 rounded-[var(--radius-md)] font-medium transition-colors w-full sm:w-auto"
-            >
-              Sign In
-            </Link>
+            {isLoggedIn ? (
+              <Link
+                href="/dashboard"
+                className="bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-[var(--color-text-inverse)] px-8 py-3 rounded-[var(--radius-md)] font-medium transition-colors w-full sm:w-auto"
+              >
+                Go to Dashboard
+              </Link>
+            ) : (
+              <>
+                <Link
+                  href="/signup"
+                  className="bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-[var(--color-text-inverse)] px-8 py-3 rounded-[var(--radius-md)] font-medium transition-colors w-full sm:w-auto"
+                >
+                  Start Learning Free
+                </Link>
+                <Link
+                  href="/login"
+                  className="border border-[var(--color-border)] text-[var(--color-text)] hover:bg-[var(--color-surface)] px-8 py-3 rounded-[var(--radius-md)] font-medium transition-colors w-full sm:w-auto"
+                >
+                  Sign In
+                </Link>
+              </>
+            )}
           </div>
         </section>
 
@@ -185,17 +217,18 @@ export default function Home() {
         {/* CTA Section */}
         <section className="py-20 text-center border-t border-[var(--color-border)]">
           <h2 className="font-display text-2xl md:text-3xl text-[var(--color-text)] mb-4">
-            Ready to level up?
+            {isLoggedIn ? "Continue your journey" : "Ready to level up?"}
           </h2>
           <p className="text-[var(--color-text-muted)] mb-8 max-w-md mx-auto">
-            Join developers who are learning to code the smart way—with guidance
-            that makes you think.
+            {isLoggedIn
+              ? "Pick up where you left off and keep building your skills."
+              : "Join developers who are learning to code the smart way—with guidance that makes you think."}
           </p>
           <Link
-            href="/signup"
+            href={isLoggedIn ? "/dashboard" : "/signup"}
             className="inline-block bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-[var(--color-text-inverse)] px-8 py-3 rounded-[var(--radius-md)] font-medium transition-colors"
           >
-            Start Your First Challenge
+            {isLoggedIn ? "Go to Dashboard" : "Start Your First Challenge"}
           </Link>
         </section>
       </main>
