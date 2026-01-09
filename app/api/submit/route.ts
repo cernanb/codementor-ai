@@ -1,115 +1,111 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { executeCode, SupportedLanguage } from "@/lib/piston";
+import { runTests } from "@/lib/test-runner";
+import { withRateLimit } from "@/lib/middleware/rate-limit";
+import { validateRequest, schemas } from "@/lib/middleware/validation";
+import {
+  formatErrorResponse,
+  logError,
+  NotFoundError,
+  UnauthorizedError,
+  ExternalServiceError,
+} from "@/lib/errors";
 
-function wrapCodeWithTestHarness(
-  userCode: string,
-  language: SupportedLanguage,
-  functionName: string,
-  input: string
-): string {
-  switch (language) {
-    case "python":
-      return `${userCode}\n\nprint(${functionName}(${input}))`;
-    case "javascript":
-      // Use spread operator for multi-argument functions (input is JSON array)
-      return `${userCode}\n\nconsole.log(JSON.stringify(${functionName}(...${input})))`;
-    case "typescript":
-      return `${userCode}\n\nconsole.log(JSON.stringify(${functionName}(...${input})))`;
-    default:
-      throw new Error(`Unsupported language: ${language}`);
-  }
-}
-export async function POST(request: NextRequest) {
-  const supabase = await createClient();
+async function handleSubmit(request: NextRequest) {
+  try {
+    const supabase = await createClient();
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-  const { challengeId, code } = await request.json();
-  // Get challenge
-  const { data: challenge } = await supabase
-    .from("challenges")
-    .select("*")
-    .eq("id", challengeId)
-    .single();
-  if (!challenge) {
-    return NextResponse.json({ error: "Challenge not found" }, { status: 404 });
-  }
-  // Run tests
-  const testResults = [];
-  let allPassed = true;
-  for (const testCase of challenge.test_cases) {
-    // Wrap user code with test harness that calls the function
-    const wrappedCode = wrapCodeWithTestHarness(
-      code,
-      challenge.language,
-      challenge.function_name,
-      testCase.input
-    );
-    const result = await executeCode(wrappedCode, challenge.language);
-    const expected = testCase.expected.trim();
-
-    // Check if test expects an error
-    const expectsError = expected.startsWith("Error:");
-
-    let actual: string;
-    let passed: boolean;
-
-    if (expectsError) {
-      // For error tests, check stderr contains the expected error message
-      actual = result.stderr.trim();
-      passed = actual.includes(expected.replace("Error: ", ""));
-    } else {
-      actual = result.stdout.trim();
-      // Normalize comparison: try JSON parse for array/object comparison
-      try {
-        const actualParsed = JSON.parse(actual);
-        const expectedParsed = JSON.parse(expected);
-        passed =
-          JSON.stringify(actualParsed) === JSON.stringify(expectedParsed);
-      } catch {
-        // Fall back to string comparison for non-JSON outputs
-        passed = actual === expected;
-      }
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) {
+      throw new UnauthorizedError();
     }
 
-    allPassed = allPassed && passed;
-    testResults.push({
-      name: testCase.name,
-      passed,
-      expected,
-      actual,
-      error: expectsError ? "" : result.stderr,
-    });
-  }
+    // Validate request body
+    const { challengeId, code } = await validateRequest(
+      request,
+      schemas.submitCode
+    );
 
-  const { data: attempt } = await supabase
-    .from("attempts")
-    .insert({
-      user_id: user.id,
-      challenge_id: challengeId,
-      code,
+    // Get challenge
+    const { data: challenge, error: challengeError } = await supabase
+      .from("challenges")
+      .select("*")
+      .eq("id", challengeId)
+      .single();
+
+    if (challengeError || !challenge) {
+      throw new NotFoundError("Challenge", challengeId);
+    }
+
+    // Run tests
+    let testResults;
+    let allPassed;
+    try {
+      const results = await runTests(code, challenge);
+      testResults = results.testResults;
+      allPassed = results.allPassed;
+    } catch (error) {
+      throw new ExternalServiceError("Piston", "Failed to execute code", error);
+    }
+
+    // Save attempt
+    const { data: attempt, error: attemptError } = await supabase
+      .from("attempts")
+      .insert({
+        user_id: user.id,
+        challenge_id: challengeId,
+        code,
+        passed: allPassed,
+        test_results: testResults,
+      })
+      .select()
+      .single();
+
+    if (attemptError || !attempt) {
+      throw new ExternalServiceError(
+        "Database",
+        "Failed to save attempt",
+        attemptError
+      );
+    }
+
+    // Update progress
+    const { error: progressError } = await supabase
+      .from("user_progress")
+      .upsert({
+        user_id: user.id,
+        challenge_id: challengeId,
+        status: allPassed ? "completed" : "in_progress",
+        attempts_count: 1,
+        completed_at: allPassed ? new Date().toISOString() : null,
+      });
+
+    if (progressError) {
+      // Log but don't fail the request if progress update fails
+      logError(progressError, { userId: user.id, challengeId });
+    }
+
+    return NextResponse.json({
+      success: true,
       passed: allPassed,
       test_results: testResults,
-    })
-    .select()
-    .single();
+      attempt_id: attempt.id,
+    });
+  } catch (error) {
+    logError(error, { endpoint: "/api/submit" });
+    const errorResponse = formatErrorResponse(error);
+    return NextResponse.json(errorResponse, {
+      status: errorResponse.statusCode,
+    });
+  }
+}
 
-  await supabase.from("user_progress").upsert({
-    user_id: user.id,
-    challenge_id: challengeId,
-    status: allPassed ? "completed" : "in_progress",
-    attempts_count: 1,
-    completed_at: allPassed ? new Date().toISOString() : null,
-  });
-  return NextResponse.json({
-    success: true,
-    passed: allPassed,
-    test_results: testResults,
-    attempt_id: attempt.id,
-  });
+export async function POST(request: NextRequest) {
+  return withRateLimit(
+    request,
+    { maxRequests: 30, windowMs: 60 * 1000 }, // 30 requests per minute
+    handleSubmit
+  );
 }
