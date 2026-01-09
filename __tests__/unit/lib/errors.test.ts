@@ -93,7 +93,11 @@ describe("Error Classes", () => {
   describe("ExternalServiceError", () => {
     it("should create an OpenAI error", () => {
       const originalError = new Error("API timeout");
-      const error = new ExternalServiceError("OpenAI", "Failed to generate", originalError);
+      const error = new ExternalServiceError(
+        "OpenAI",
+        "Failed to generate",
+        originalError
+      );
 
       expect(error.message).toBe("OpenAI error: Failed to generate");
       expect(error.code).toBe(ErrorCode.OPENAI_ERROR);
@@ -130,7 +134,7 @@ describe("formatErrorResponse", () => {
 
     expect(response.statusCode).toBe(500);
     expect(response.code).toBe(ErrorCode.INTERNAL_ERROR);
-    
+
     if (process.env.NODE_ENV === "production") {
       expect(response.error).toBe("Internal server error");
     } else {
@@ -148,13 +152,19 @@ describe("formatErrorResponse", () => {
 
   it("should hide details in production", () => {
     const originalEnv = process.env.NODE_ENV;
-    process.env.NODE_ENV = "production";
+    Object.defineProperty(process.env, "NODE_ENV", {
+      value: "production",
+      configurable: true,
+    });
 
     const error = new ValidationError("Invalid input", { sensitive: "data" });
     const response = formatErrorResponse(error);
 
     expect(response.details).toBeUndefined();
 
-    process.env.NODE_ENV = originalEnv;
+    Object.defineProperty(process.env, "NODE_ENV", {
+      value: originalEnv,
+      configurable: true,
+    });
   });
 });
