@@ -2,6 +2,10 @@
 
 An adaptive learning platform for coding challenges with AI-powered hints. Built with Next.js, TypeScript, Supabase, and OpenAI.
 
+https://github.com/user-attachments/assets/e40691aa-0623-4f20-93d5-67999e9d3814
+
+
+
 ## 🎯 Features
 
 - **Adaptive Learning**: Personalized challenge recommendations based on performance
