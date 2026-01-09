@@ -429,17 +429,16 @@ POST /api/submit
   attempt_id: string
 }
 
-// Generate Hint
+// Generate Hint (runs tests server-side)
 POST /api/hint
 {
   challengeId: string
   code: string
-  failedTests: TestResult[]
 }
 → Response: {
   hint: string
-  hint_type: 'syntax' | 'logic' | 'approach' | 'edge_case'
-  hint_id: string
+  hint_type: 'syntax' | 'logic' | 'approach' | 'edge_case' | 'success'
+  hint_id: string | null
 }
 ```
 
