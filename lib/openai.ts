@@ -1,8 +1,23 @@
 import { AIHint, Challenge, TestResult } from "@/types";
 import OpenAI from "openai";
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+
+let openai: OpenAI | null = null;
+
+function getOpenAIClient() {
+  const apiKey = process.env.OPENAI_API_KEY;
+
+  if (!apiKey) {
+    throw new Error(
+      "Missing OPENAI_API_KEY environment variable. Please set it to use the hint generation feature."
+    );
+  }
+
+  if (!openai) {
+    openai = new OpenAI({ apiKey });
+  }
+
+  return openai;
+}
 
 export async function generateHint(
   challenge: Challenge,
@@ -37,7 +52,9 @@ export async function generateHint(
     }
     `;
 
-  const response = await openai.chat.completions.create({
+  const client = getOpenAIClient();
+
+  const response = await client.chat.completions.create({
     model: "gpt-4",
     messages: [{ role: "user", content: prompt }],
     temperature: 0.7,
