@@ -9,14 +9,12 @@ interface CodeEditorProps {
   challengeId: string;
   language: string;
   starterCode: string;
-  testCases: unknown;
 }
 
 export function CodeEditor({
   challengeId,
   language,
   starterCode,
-  testCases,
 }: CodeEditorProps) {
   const [code, setCode] = useState(starterCode);
   const [results, setResults] = useState<TestResultsData | null>(null);
@@ -99,7 +97,9 @@ export function CodeEditor({
                 <p className="text-[var(--color-warning)] font-semibold text-sm mb-1">
                   Hint
                 </p>
-                <p className="text-[var(--color-text)] text-sm leading-relaxed">{hint}</p>
+                <p className="text-[var(--color-text)] text-sm leading-relaxed">
+                  {hint}
+                </p>
               </div>
             </div>
           </div>
