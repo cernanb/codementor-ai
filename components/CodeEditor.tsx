@@ -38,7 +38,6 @@ export function CodeEditor({
   };
   const handleHint = async () => {
     setIsLoadingHint(true);
-    const failedTests = results?.test_results?.filter((t) => !t.passed) || [];
 
     const res = await fetch("/api/hint", {
       method: "POST",
@@ -46,7 +45,6 @@ export function CodeEditor({
       body: JSON.stringify({
         challengeId,
         code,
-        failedTests,
       }),
     });
 
@@ -84,22 +82,24 @@ export function CodeEditor({
         </div>
       )}
       {hint && (
-        <div className="border-t border-[var(--color-border)] p-4">
-          <div className="bg-[var(--color-warning)]/10 border border-[var(--color-warning)] rounded-md p-4 relative">
+        <div className="fixed bottom-6 right-6 z-50 max-w-sm bg-[var(--color-surface)] border border-[var(--color-warning)] rounded-lg shadow-lg shadow-black/25 animate-in slide-in-from-bottom-4 fade-in duration-300">
+          <div className="p-4">
             <button
               onClick={() => setHint("")}
-              className="absolute top-2 right-2 p-1 rounded hover:bg-[var(--color-warning)]/20 text-[var(--color-warning)] transition-colors cursor-pointer"
+              className="absolute top-3 right-3 p-1 rounded hover:bg-[var(--color-warning)]/20 text-[var(--color-text-muted)] hover:text-[var(--color-warning)] transition-colors cursor-pointer"
               aria-label="Dismiss hint"
             >
               <X className="w-4 h-4" />
             </button>
             <div className="flex items-start gap-3 pr-6">
-              <Lightbulb className="w-5 h-5 text-[var(--color-warning)] flex-shrink-0 mt-0.5" />
+              <div className="p-2 rounded-full bg-[var(--color-warning)]/20">
+                <Lightbulb className="w-4 h-4 text-[var(--color-warning)]" />
+              </div>
               <div>
-                <p className="text-[var(--color-warning)] font-semibold mb-2">
+                <p className="text-[var(--color-warning)] font-semibold text-sm mb-1">
                   Hint
                 </p>
-                <p className="text-[var(--color-text)]">{hint}</p>
+                <p className="text-[var(--color-text)] text-sm leading-relaxed">{hint}</p>
               </div>
             </div>
           </div>
