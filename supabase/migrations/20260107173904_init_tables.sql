@@ -20,11 +20,11 @@ CREATE POLICY "Public profiles are viewable by everyone"
 
 CREATE POLICY "Users can insert their own profile"
   ON profiles FOR INSERT
-  WITH CHECK (auth.uid() = id);
+  WITH CHECK ( (select auth.uid()) = id);
 
 CREATE POLICY "Users can update their own profile"
   ON profiles FOR UPDATE
-  USING (auth.uid() = id);
+  USING ((select auth.uid()) = id);
 
 -- Challenges table
 CREATE TABLE IF NOT EXISTS challenges (
@@ -67,11 +67,11 @@ ALTER TABLE attempts ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Users can view their own attempts"
   ON attempts FOR SELECT
-  USING (auth.uid() = user_id);
+  USING ((select auth.uid()) = user_id);
 
 CREATE POLICY "Users can insert their own attempts"
   ON attempts FOR INSERT
-  WITH CHECK (auth.uid() = user_id);
+  WITH CHECK ((select auth.uid()) = user_id);
 
 CREATE INDEX idx_attempts_user_challenge ON attempts(user_id, challenge_id);
 CREATE INDEX idx_attempts_created ON attempts(created_at DESC);
@@ -93,11 +93,11 @@ ALTER TABLE ai_hints ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Users can view their own hints"
   ON ai_hints FOR SELECT
-  USING (auth.uid() = user_id);
+  USING ((select auth.uid()) = user_id);
 
 CREATE POLICY "Users can insert their own hints"
   ON ai_hints FOR INSERT
-  WITH CHECK (auth.uid() = user_id);
+  WITH CHECK ((select auth.uid()) = user_id);
 
 CREATE INDEX idx_hints_user_challenge ON ai_hints(user_id, challenge_id);
 CREATE INDEX idx_hints_created ON ai_hints(created_at DESC);
@@ -119,15 +119,15 @@ ALTER TABLE user_progress ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Users can view their own progress"
   ON user_progress FOR SELECT
-  USING (auth.uid() = user_id);
+  USING ((select auth.uid()) = user_id);
 
 CREATE POLICY "Users can insert their own progress"
   ON user_progress FOR INSERT
-  WITH CHECK (auth.uid() = user_id);
+  WITH CHECK ((select auth.uid()) = user_id);
 
 CREATE POLICY "Users can update their own progress"
   ON user_progress FOR UPDATE
-  USING (auth.uid() = user_id);
+  USING ((select auth.uid()) = user_id);
 
 CREATE INDEX idx_progress_user ON user_progress(user_id);
 CREATE INDEX idx_progress_status ON user_progress(status);
