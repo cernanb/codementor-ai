@@ -66,7 +66,6 @@ export default async function ChallengePage({
           challengeId={challenge.id}
           language={challenge.language}
           starterCode={challenge.starter_code}
-          testCases={challenge.test_cases}
         />
       </main>
     </div>
