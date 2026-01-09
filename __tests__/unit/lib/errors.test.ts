@@ -3,7 +3,7 @@
  * Demonstrates testing best practices
  */
 
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import {
   ApplicationError,
   ValidationError,
@@ -151,20 +151,13 @@ describe("formatErrorResponse", () => {
   });
 
   it("should hide details in production", () => {
-    const originalEnv = process.env.NODE_ENV;
-    Object.defineProperty(process.env, "NODE_ENV", {
-      value: "production",
-      configurable: true,
-    });
+    vi.stubEnv("NODE_ENV", "production");
 
     const error = new ValidationError("Invalid input", { sensitive: "data" });
     const response = formatErrorResponse(error);
 
     expect(response.details).toBeUndefined();
 
-    Object.defineProperty(process.env, "NODE_ENV", {
-      value: originalEnv,
-      configurable: true,
-    });
+    vi.unstubAllEnvs();
   });
 });
