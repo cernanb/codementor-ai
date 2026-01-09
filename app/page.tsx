@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { LogoutButton } from "@/components/LogoutButton";
+import { Logo } from "@/components/Logo";
 
 export default async function Home() {
   const supabase = await createClient();
@@ -13,9 +14,8 @@ export default async function Home() {
       {/* Navigation */}
       <nav className="border-b border-[var(--color-border)]">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/" className="font-display text-xl text-[var(--color-text)]">
-            <span className="text-[var(--color-primary)]">&gt;</span> CodeMentor
-            <span className="text-[var(--color-success)]">_</span>
+          <Link href="/" className="flex items-center">
+            <Logo size="md" />
           </Link>
           <div className="flex items-center gap-4">
             {isLoggedIn ? (
