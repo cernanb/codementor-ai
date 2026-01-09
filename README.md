@@ -1,6 +1,6 @@
 # CodeMentor AI
 
-An adaptive learning platform for coding challenges with AI-powered hints and personalized learning paths. Built with Next.js, TypeScript, Supabase, and OpenAI.
+An adaptive learning platform for coding challenges with AI-powered hints. Built with Next.js, TypeScript, Supabase, and OpenAI.
 
 ## 🎯 Features
 
@@ -56,7 +56,7 @@ An adaptive learning platform for coding challenges with AI-powered hints and pe
 
 ### Prerequisites
 
-- Node.js 20+ 
+- Node.js 20+
 - npm, yarn, pnpm, or bun
 - Supabase account (or local Supabase instance)
 - OpenAI API key
@@ -65,40 +65,45 @@ An adaptive learning platform for coding challenges with AI-powered hints and pe
 ### Installation
 
 1. **Clone the repository**
+
    ```bash
    git clone <repository-url>
    cd codementor-ai
    ```
 
 2. **Install dependencies**
+
    ```bash
    npm install
    ```
 
 3. **Set up environment variables**
+
    ```bash
    cp .env.example .env.local
    ```
-   
+
    Required environment variables:
+
    ```env
    NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-   SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+   NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=your_supabase_publishable_key
    OPENAI_API_KEY=your_openai_api_key
    PISTON_URL=http://localhost:2000  # or your Piston instance
    ```
 
 4. **Set up the database**
+
    ```bash
    # Run migrations
    supabase migration up
-   
+
    # Seed with sample data (optional)
    supabase db reset
    ```
 
 5. **Run the development server**
+
    ```bash
    npm run dev
    ```
@@ -148,6 +153,7 @@ npm test:e2e
 ### Commit Messages
 
 Follow [Conventional Commits](https://www.conventionalcommits.org/):
+
 - `feat:` New features
 - `fix:` Bug fixes
 - `docs:` Documentation changes
@@ -166,6 +172,7 @@ Follow [Conventional Commits](https://www.conventionalcommits.org/):
 ### Database Migrations
 
 Run migrations in production:
+
 ```bash
 supabase db push
 ```
