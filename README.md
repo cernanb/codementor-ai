@@ -1,36 +1,222 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# CodeMentor AI
 
-## Getting Started
+An adaptive learning platform for coding challenges with AI-powered hints and personalized learning paths. Built with Next.js, TypeScript, Supabase, and OpenAI.
 
-First, run the development server:
+## 🎯 Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- **Adaptive Learning**: Personalized challenge recommendations based on performance
+- **AI-Powered Hints**: Context-aware hints using OpenAI GPT-4
+- **Multi-Language Support**: Python, JavaScript, and TypeScript
+- **Real-Time Code Execution**: Secure code execution via Piston API
+- **Progress Tracking**: Comprehensive analytics and learning path visualization
+- **Modern Stack**: Next.js 16, TypeScript, Supabase, Tailwind CSS
+
+## 🏗️ Architecture
+
+### Tech Stack
+
+- **Frontend**: Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS
+- **Backend**: Next.js API Routes, Supabase (PostgreSQL + Auth)
+- **AI/ML**: OpenAI GPT-4 for adaptive hints
+- **Code Execution**: Piston API for secure code execution
+- **Deployment**: Vercel (Frontend), Supabase (Database)
+
+### Project Structure
+
+```
+├── app/                    # Next.js App Router
+│   ├── api/               # API routes
+│   │   ├── hint/         # AI hint generation
+│   │   └── submit/       # Code submission & testing
+│   ├── challenge/        # Challenge pages
+│   ├── dashboard/        # User dashboard
+│   └── layout.tsx        # Root layout
+├── components/            # React components
+│   ├── ui/               # Reusable UI components (shadcn/ui)
+│   ├── CodeEditor.tsx    # Monaco editor integration
+│   └── TestResults.tsx   # Test execution results
+├── lib/                  # Utility libraries
+│   ├── openai.ts         # OpenAI integration
+│   ├── piston.ts         # Code execution
+│   └── supabase/         # Supabase client utilities
+├── types/                # TypeScript type definitions
+└── supabase/             # Database migrations & config
+    └── migrations/       # SQL migration files
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Key Design Patterns
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **Server Components**: Leveraging Next.js server components for data fetching
+- **Type Safety**: Comprehensive TypeScript types generated from database schema
+- **Row Level Security**: Supabase RLS policies for data access control
+- **Error Boundaries**: Graceful error handling with user-friendly messages
+- **Separation of Concerns**: Clear separation between UI, business logic, and data access
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🚀 Getting Started
 
-## Learn More
+### Prerequisites
 
-To learn more about Next.js, take a look at the following resources:
+- Node.js 20+ 
+- npm, yarn, pnpm, or bun
+- Supabase account (or local Supabase instance)
+- OpenAI API key
+- Piston API instance (or use public instance)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Installation
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd codementor-ai
+   ```
 
-## Deploy on Vercel
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+3. **Set up environment variables**
+   ```bash
+   cp .env.example .env.local
+   ```
+   
+   Required environment variables:
+   ```env
+   NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+   SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+   OPENAI_API_KEY=your_openai_api_key
+   PISTON_URL=http://localhost:2000  # or your Piston instance
+   ```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+4. **Set up the database**
+   ```bash
+   # Run migrations
+   supabase migration up
+   
+   # Seed with sample data (optional)
+   supabase db reset
+   ```
+
+5. **Run the development server**
+   ```bash
+   npm run dev
+   ```
+
+6. **Open [http://localhost:3000](http://localhost:3000)**
+
+## 🧪 Testing
+
+### Running Tests
+
+```bash
+# Run all tests
+npm test
+
+# Run tests in watch mode
+npm test:watch
+
+# Run tests with coverage
+npm test:coverage
+
+# Run E2E tests
+npm test:e2e
+```
+
+### Test Structure
+
+- `__tests__/unit/` - Unit tests for utilities and business logic
+- `__tests__/integration/` - API route integration tests
+- `__tests__/e2e/` - End-to-end user flow tests
+
+## 📝 Development Workflow
+
+### Code Quality
+
+- **Linting**: ESLint with Next.js config
+- **Formatting**: Prettier (recommended)
+- **Type Checking**: TypeScript strict mode
+- **Pre-commit Hooks**: Husky + lint-staged (recommended setup)
+
+### Branch Strategy
+
+- `main` - Production-ready code
+- `develop` - Integration branch
+- `feature/*` - Feature branches
+- `fix/*` - Bug fixes
+
+### Commit Messages
+
+Follow [Conventional Commits](https://www.conventionalcommits.org/):
+- `feat:` New features
+- `fix:` Bug fixes
+- `docs:` Documentation changes
+- `refactor:` Code refactoring
+- `test:` Test additions/changes
+- `chore:` Maintenance tasks
+
+## 🏭 Production Deployment
+
+### Vercel Deployment
+
+1. Connect your GitHub repository to Vercel
+2. Configure environment variables in Vercel dashboard
+3. Deploy automatically on push to `main`
+
+### Database Migrations
+
+Run migrations in production:
+```bash
+supabase db push
+```
+
+### Monitoring
+
+- **Error Tracking**: Sentry (recommended)
+- **Analytics**: Vercel Analytics or custom solution
+- **Performance**: Vercel Speed Insights
+
+## 🤝 Contributing
+
+### For Apprentices
+
+1. Read the [Architecture Guide](./docs/ARCHITECTURE.md)
+2. Check the [Component Library](./docs/COMPONENTS.md)
+3. Review [Code Review Checklist](./docs/CODE_REVIEW.md)
+4. Create a feature branch from `develop`
+5. Write tests for your changes
+6. Submit a PR with a clear description
+
+### Code Review Process
+
+1. Automated checks (tests, linting) must pass
+2. At least one approval required
+3. Address all review comments
+4. Squash commits before merging
+
+## 📚 Documentation
+
+- [Architecture Guide](./docs/ARCHITECTURE.md) - System design and patterns
+- [API Documentation](./docs/API.md) - API endpoints and contracts
+- [Component Library](./docs/COMPONENTS.md) - Reusable components
+- [Database Schema](./docs/DATABASE.md) - Schema documentation
+
+## 🎓 Learning Resources
+
+### For New Developers
+
+- [Next.js App Router Docs](https://nextjs.org/docs/app)
+- [Supabase Documentation](https://supabase.com/docs)
+- [TypeScript Handbook](https://www.typescriptlang.org/docs/)
+- [React Server Components](https://react.dev/blog/2023/03/22/react-labs-what-we-have-been-working-on-march-2023#react-server-components)
+
+## 📄 License
+
+MIT
+
+## 🙏 Acknowledgments
+
+- Built with [Next.js](https://nextjs.org)
+- UI components from [shadcn/ui](https://ui.shadcn.com)
+- Code editor powered by [Monaco Editor](https://microsoft.github.io/monaco-editor/)
+- Database hosted on [Supabase](https://supabase.com)
