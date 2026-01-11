@@ -5,6 +5,10 @@ import { LogoutButton } from "@/components/LogoutButton";
 export default async function DashboardPage() {
   const supabase = await createClient();
 
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
   const { data: challenges } = await supabase
     .from("challenges")
     .select(
@@ -25,7 +29,12 @@ export default async function DashboardPage() {
             <h1 className="font-display text-4xl text-white">
               Your Challenges
             </h1>
-            <LogoutButton />
+            <div>
+              <span className="text-sm text-[var(--color-text-muted)]">
+                {user?.user_metadata?.username}
+              </span>
+              <LogoutButton />
+            </div>
           </div>
           <ProgressBar completed={completed} total={challenges?.length || 0} />
         </div>
