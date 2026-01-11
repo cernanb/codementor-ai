@@ -25,6 +25,16 @@ export const schemas = {
       .string()
       .min(1, "Code cannot be empty")
       .max(100000, "Code too large"),
+    attemptId: z.string().uuid("Invalid attempt ID"),
+  }),
+
+  runTests: z.object({
+    challengeId: z.string().uuid("Invalid challenge ID"),
+    code: z
+      .string()
+      .min(1, "Code cannot be empty")
+      .max(100000, "Code too large"),
+    attemptId: z.string().optional(),
   }),
 
   requestHint: z.object({
