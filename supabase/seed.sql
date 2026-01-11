@@ -10,7 +10,6 @@ INSERT INTO challenges (
   starter_code,
   solution_code,
   test_cases,
-  hints,
   order_index
 ) VALUES (
   'FizzBuzz Classic',
@@ -51,12 +50,6 @@ fizzbuzz(7)  → "7"
     {"name": "Edge case 1", "input": "1", "expected": "1"},
     {"name": "Large multiple", "input": "30", "expected": "FizzBuzz"}
   ]'::jsonb,
-  '[
-    "Start by checking if the number is divisible by both 3 and 5. What operator checks divisibility?",
-    "Remember to check the combined condition (divisible by both) BEFORE checking individual conditions.",
-    "The modulo operator (%) returns the remainder. If n % 3 == 0, n is divisible by 3.",
-    "Don''t forget to convert numbers to strings when returning them!"
-  ]'::jsonb,
   1
 );
 
@@ -70,7 +63,6 @@ INSERT INTO challenges (
   starter_code,
   solution_code,
   test_cases,
-  hints,
   order_index
 ) VALUES (
   'Two Sum Problem',
@@ -115,12 +107,6 @@ twoSum([3, 2, 4], 6)       → [1, 2]  // nums[1] + nums[2] = 2 + 4 = 6
     {"name": "Zero included", "input": "[[0, 4, 3, 0], 0]", "expected": "[0, 3]"},
     {"name": "Large array", "input": "[[1, 2, 3, 4, 5, 6, 7, 8, 9], 17]", "expected": "[7, 8]"}
   ]'::jsonb,
-  '[
-    "Think about what you need to find for each number: if you have num, you need (target - num).",
-    "A nested loop (checking every pair) works but is slow. Can you store information as you go?",
-    "Consider using a Map or object to remember numbers you''ve seen and their indices.",
-    "For each number, check if its complement (target - num) has been seen before."
-  ]'::jsonb,
   2
 );
 
@@ -134,7 +120,6 @@ INSERT INTO challenges (
   starter_code,
   solution_code,
   test_cases,
-  hints,
   order_index
 ) VALUES (
   'Generic Config Parser',
@@ -251,13 +236,6 @@ function parseConfig<T>(raw: unknown, schema: Schema<T>): T {
       "input": "[{\"port\": \"abc\"}, {\"port\": {\"type\": \"number\", \"required\": true}}]",
       "expected": "Error: Field port must be a number"
     }
-  ]'::jsonb,
-  '[
-    "Start by validating that raw is actually an object, not null or undefined.",
-    "Iterate through each key in the schema to validate and transform.",
-    "For required fields, check if the value exists before processing.",
-    "Use parseFloat() to convert string numbers, but remember to check for NaN.",
-    "The return type should be properly cast as T for type safety."
   ]'::jsonb,
   3
 );
