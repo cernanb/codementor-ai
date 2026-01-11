@@ -2,36 +2,82 @@
 import Editor from "@monaco-editor/react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Play, Lightbulb, X, ExternalLink, BookOpen } from "lucide-react";
+import {
+  Play,
+  Lightbulb,
+  X,
+  ExternalLink,
+  BookOpen,
+  Disc2Icon,
+} from "lucide-react";
 import { TestResults, type TestResultsData } from "./TestResults";
-import type { HintData } from "@/types";
+import type { Attempt, HintData } from "@/types";
+import { saveAttemptCode } from "@/app/challenge/[id]/actions";
 
 interface CodeEditorProps {
   challengeId: string;
   language: string;
   starterCode: string;
+  currentAttempt?: Attempt;
 }
 
 export function CodeEditor({
   challengeId,
   language,
   starterCode,
+  currentAttempt,
 }: CodeEditorProps) {
-  const [code, setCode] = useState(starterCode);
+  const [code, setCode] = useState(
+    currentAttempt ? currentAttempt.code : starterCode
+  );
   const [results, setResults] = useState<TestResultsData | null>(null);
   const [hintData, setHintData] = useState<HintData | null>(null);
   const [isRunning, setIsRunning] = useState(false);
   const [isLoadingHint, setIsLoadingHint] = useState(false);
-  const handleRun = async () => {
-    setIsRunning(true);
+  const [isSaving, setIsSaving] = useState(false);
 
+  const handleSaveCode = async () => {
+    if (!currentAttempt?.id) return;
+    setIsSaving(true);
+    try {
+      await saveAttemptCode(currentAttempt.id, code);
+    } catch (error) {
+      console.error("Failed to save code:", error);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleSubmit = async () => {
     const res = await fetch("/api/submit", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ challengeId, code }),
+      body: JSON.stringify({
+        challengeId,
+        code,
+        attemptId: currentAttempt?.id,
+      }),
     });
 
     const data = await res.json();
+    setResults(data);
+    setIsRunning(false);
+  };
+  const handleRun = async () => {
+    setIsRunning(true);
+
+    const res = await fetch("/api/run-tests", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        challengeId,
+        code,
+        attemptId: currentAttempt?.id,
+      }),
+    });
+
+    const data = await res.json();
+    console.log(data);
     setResults(data);
     setIsRunning(false);
   };
@@ -65,6 +111,15 @@ export function CodeEditor({
           <Lightbulb className="w-4 h-4 mr-2" />
           {isLoadingHint ? "Thinking..." : "Get Hint"}
         </Button>
+        <Button
+          variant="outline"
+          onClick={handleSaveCode}
+          disabled={isSaving || !currentAttempt}
+        >
+          <Disc2Icon className="w-4 h-4 mr-2" />
+          {isSaving ? "Saving..." : "Save"}
+        </Button>
+        {results?.passed && <Button onClick={handleSubmit}>Submit</Button>}
       </div>
       <Editor
         height="60%"

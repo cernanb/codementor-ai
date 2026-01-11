@@ -11,7 +11,7 @@ import {
   ExternalServiceError,
 } from "@/lib/errors";
 
-async function handleSubmit(request: NextRequest) {
+async function handleRunTests(request: NextRequest) {
   try {
     const supabase = await createClient();
 
@@ -25,7 +25,7 @@ async function handleSubmit(request: NextRequest) {
     // Validate request body
     const { challengeId, code, attemptId } = await validateRequest(
       request,
-      schemas.submitCode
+      schemas.runTests
     );
 
     // Get challenge
@@ -50,25 +50,27 @@ async function handleSubmit(request: NextRequest) {
       throw new ExternalServiceError("Piston", "Failed to execute code", error);
     }
 
-    // Save attempt
-    const { data: attempt, error: attemptError } = await supabase
-      .from("attempts")
-      .update({
-        // user_id: user.id,
-        // challenge_id: challengeId,
-        code,
-        passed: allPassed,
-        test_results: testResults,
-      })
-      .eq("id", attemptId)
-      .select();
+    // Create attempt
+    if (!attemptId) {
+      const { data: attempt, error: attemptError } = await supabase
+        .from("attempts")
+        .insert({
+          user_id: user.id,
+          challenge_id: challengeId,
+          code,
+          passed: allPassed,
+          test_results: testResults,
+        })
+        .select()
+        .single();
 
-    if (attemptError || !attempt) {
-      throw new ExternalServiceError(
-        "Database",
-        "Failed to save attempt",
-        attemptError
-      );
+      if (attemptError || !attempt) {
+        throw new ExternalServiceError(
+          "Database",
+          "Failed to save attempt",
+          attemptError
+        );
+      }
     }
 
     // Update progress
@@ -91,7 +93,6 @@ async function handleSubmit(request: NextRequest) {
       success: true,
       passed: allPassed,
       test_results: testResults,
-      attempt_id: attemptId,
     });
   } catch (error) {
     logError(error, { endpoint: "/api/submit" });
@@ -106,6 +107,6 @@ export async function POST(request: NextRequest) {
   return withRateLimit(
     request,
     { maxRequests: 30, windowMs: 60 * 1000 }, // 30 requests per minute
-    handleSubmit
+    handleRunTests
   );
 }

@@ -12,12 +12,21 @@ export default async function ChallengePage({
   const { id } = await params;
   const supabase = await createClient();
 
+  const { data: attempt } = await supabase
+    .from("attempts")
+    .select("*")
+    .eq("passed", false)
+    .eq("challenge_id", id)
+    .order("created_at", { ascending: false });
+
   const { data: challenge } = await supabase
     .from("challenges")
     .select("*")
     .eq("id", id)
     .single();
   if (!challenge) notFound();
+
+  const currentAttempt = attempt?.[0];
   return (
     <div className="h-screen flex">
       <aside className="w-96 bg-slate-900 border-r border-slate-800 overflow-y-auto">
@@ -63,6 +72,7 @@ export default async function ChallengePage({
       </aside>
       <main className="flex-1 flex flex-col">
         <CodeEditor
+          currentAttempt={currentAttempt}
           challengeId={challenge.id}
           language={challenge.language}
           starterCode={challenge.starter_code}
