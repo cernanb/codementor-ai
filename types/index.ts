@@ -68,6 +68,30 @@ export interface FallbackHint {
   type: HintType;
 }
 
+export interface KnowledgeSource {
+  title?: string;
+  url?: string;
+  section?: string;
+}
+
+export interface KnowledgeMetadata {
+  topic?: string;
+  source?: KnowledgeSource;
+  tags?: string[];
+  difficulty?: string;
+}
+
+// Type for match_knowledge RPC result (KnowledgeBase row + similarity score)
+export interface KnowledgeMatch {
+  id: string;
+  challenge_id: string | null;
+  content: string;
+  type: string;
+  language: string;
+  metadata: KnowledgeMetadata;
+  similarity: number;
+}
+
 // ============================================================================
 // Re-export Database type for convenience
 // ============================================================================
