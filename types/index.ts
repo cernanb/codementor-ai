@@ -50,8 +50,9 @@ export type ProgressStatus = "not_started" | "in_progress" | "completed";
 // ============================================================================
 
 export interface TestCase {
-  input: unknown;
-  expected: unknown;
+  name: string;
+  input: string;
+  expected: string;
   description?: string;
 }
 

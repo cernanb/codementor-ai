@@ -1,12 +1,5 @@
 import { executeCode, SupportedLanguage } from "@/lib/piston";
-import { TestResult, Challenge } from "@/types";
-
-interface TestCase {
-  name: string;
-  input: string;
-  expected: string;
-  description?: string;
-}
+import type { TestResult, Challenge, TestCase } from "@/types";
 
 function wrapCodeWithTestHarness(
   userCode: string,
@@ -42,7 +35,7 @@ export async function runTests(
   const testResults: TestResult[] = [];
   let allPassed = true;
 
-  for (const testCase of challenge.test_cases as TestCase[]) {
+  for (const testCase of challenge.test_cases as unknown as TestCase[]) {
     const wrappedCode = wrapCodeWithTestHarness(
       code,
       challenge.language as SupportedLanguage,
@@ -72,7 +65,8 @@ export async function runTests(
       try {
         const actualParsed = JSON.parse(actual);
         const expectedParsed = JSON.parse(expected);
-        passed = JSON.stringify(actualParsed) === JSON.stringify(expectedParsed);
+        passed =
+          JSON.stringify(actualParsed) === JSON.stringify(expectedParsed);
       } catch {
         // Fall back to string comparison for non-JSON outputs
         passed = actual === expected;
