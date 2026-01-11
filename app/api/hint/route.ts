@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { generateHint } from "@/lib/openai";
+import { generateHintWithRAG } from "@/lib/rag";
+import type { RAGSource } from "@/types";
 import { runTests, getFailedTests } from "@/lib/test-runner";
 import { withRateLimit } from "@/lib/middleware/rate-limit";
 import { validateRequest, schemas } from "@/lib/middleware/validation";
@@ -56,6 +57,7 @@ async function handleHint(request: NextRequest) {
         hint: "Your code passes all tests! No hint needed.",
         hint_type: "success",
         hint_id: null,
+        sources: [],
       });
     }
 
@@ -77,12 +79,19 @@ async function handleHint(request: NextRequest) {
     let hint: string;
     let hint_type: string;
     let tokens_used: number | undefined;
+    let sources: RAGSource[] = [];
 
     try {
-      const result = await generateHint(challenge, code, failedTests, hints);
+      const result = await generateHintWithRAG(
+        challenge,
+        code,
+        failedTests,
+        hints
+      );
       hint = result.hint;
       hint_type = result.hint_type;
       tokens_used = result.tokens_used;
+      sources = result.sources;
     } catch (error) {
       throw new ExternalServiceError(
         "OpenAI",
@@ -100,6 +109,16 @@ async function handleHint(request: NextRequest) {
         hint_text: hint,
         hint_type,
         tokens_used,
+        metadata: {
+          rag_enabled: true,
+          sources_count: sources.length,
+          sources: sources.map((s) => ({
+            title: s.title,
+            url: s.url,
+            topic: s.topic,
+            similarity: s.similarity,
+          })),
+        },
       })
       .select()
       .single();
@@ -150,6 +169,14 @@ async function handleHint(request: NextRequest) {
       hint,
       hint_type,
       hint_id: savedHint.id,
+      sources: sources
+        .filter((s) => s.title)
+        .map((s) => ({
+          title: s.title,
+          url: s.url,
+          section: s.section,
+          topic: s.topic,
+        })),
     });
   } catch (error) {
     logError(error, { endpoint: "/api/hint" });

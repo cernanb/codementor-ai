@@ -1,27 +1,15 @@
-import {
+import type {
   AIHint,
   Challenge,
-  HintType,
   KnowledgeMatch,
+  RAGHintResult,
+  RAGSource,
   TestResult,
 } from "@/types";
 import { createClient } from "./supabase/server";
 import { getOpenAIClient } from "./openai";
 
-export interface RAGSource {
-  title: string;
-  url?: string;
-  section?: string;
-  topic?: string;
-  similarity: number;
-}
-
-export interface RAGHintResult {
-  hint: string;
-  hint_type: HintType;
-  sources: RAGSource[];
-  tokens_used?: number;
-}
+export type { RAGSource, RAGHintResult } from "@/types";
 
 async function retrieveRelevantDocs(
   userCode: string,

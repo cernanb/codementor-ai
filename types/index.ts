@@ -108,6 +108,18 @@ export interface HintData {
   sources: HintSource[];
 }
 
+// RAG-specific types (includes similarity score from vector search)
+export interface RAGSource extends HintSource {
+  similarity: number;
+}
+
+export interface RAGHintResult {
+  hint: string;
+  hint_type: HintType;
+  sources: RAGSource[];
+  tokens_used?: number;
+}
+
 // ============================================================================
 // Re-export Database type for convenience
 // ============================================================================
