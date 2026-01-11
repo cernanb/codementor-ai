@@ -19,8 +19,6 @@ async function retrieveRelevantDocs(
   const supabase = await createClient();
   const openai = getOpenAIClient();
 
-  console.log(failedTests);
-
   const errorContext = `
     Programming language: ${language || "unknown"}
     Code with issues: ${userCode}
