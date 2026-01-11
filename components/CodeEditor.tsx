@@ -2,8 +2,9 @@
 import Editor from "@monaco-editor/react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Play, Lightbulb, X } from "lucide-react";
+import { Play, Lightbulb, X, ExternalLink, BookOpen } from "lucide-react";
 import { TestResults, type TestResultsData } from "./TestResults";
+import type { HintData } from "@/types";
 
 interface CodeEditorProps {
   challengeId: string;
@@ -18,7 +19,7 @@ export function CodeEditor({
 }: CodeEditorProps) {
   const [code, setCode] = useState(starterCode);
   const [results, setResults] = useState<TestResultsData | null>(null);
-  const [hint, setHint] = useState("");
+  const [hintData, setHintData] = useState<HintData | null>(null);
   const [isRunning, setIsRunning] = useState(false);
   const [isLoadingHint, setIsLoadingHint] = useState(false);
   const handleRun = async () => {
@@ -47,7 +48,10 @@ export function CodeEditor({
     });
 
     const data = await res.json();
-    setHint(data.hint);
+    setHintData({
+      hint: data.hint,
+      sources: data.sources || [],
+    });
     setIsLoadingHint(false);
   };
   return (
@@ -79,11 +83,11 @@ export function CodeEditor({
           <TestResults results={results} />
         </div>
       )}
-      {hint && (
-        <div className="fixed bottom-6 right-6 z-50 max-w-sm bg-[var(--color-surface)] border border-[var(--color-warning)] rounded-lg shadow-lg shadow-black/25 animate-in slide-in-from-bottom-4 fade-in duration-300">
+      {hintData && (
+        <div className="fixed bottom-6 right-6 z-50 max-w-md bg-[var(--color-surface)] border border-[var(--color-warning)] rounded-lg shadow-lg shadow-black/25 animate-in slide-in-from-bottom-4 fade-in duration-300">
           <div className="p-4">
             <button
-              onClick={() => setHint("")}
+              onClick={() => setHintData(null)}
               className="absolute top-3 right-3 p-1 rounded hover:bg-[var(--color-warning)]/20 text-[var(--color-text-muted)] hover:text-[var(--color-warning)] transition-colors cursor-pointer"
               aria-label="Dismiss hint"
             >
@@ -93,13 +97,53 @@ export function CodeEditor({
               <div className="p-2 rounded-full bg-[var(--color-warning)]/20">
                 <Lightbulb className="w-4 h-4 text-[var(--color-warning)]" />
               </div>
-              <div>
+              <div className="flex-1 min-w-0">
                 <p className="text-[var(--color-warning)] font-semibold text-sm mb-1">
                   Hint
                 </p>
                 <p className="text-[var(--color-text)] text-sm leading-relaxed">
-                  {hint}
+                  {hintData.hint}
                 </p>
+                {hintData.sources.length > 0 && (
+                  <div className="mt-3 pt-3 border-t border-[var(--color-border)]">
+                    <div className="flex items-center gap-1.5 text-[var(--color-text-muted)] text-xs mb-2">
+                      <BookOpen className="w-3 h-3" />
+                      <span>Related documentation</span>
+                    </div>
+                    <ul className="space-y-1">
+                      {hintData.sources.map((source, index) => (
+                        <li key={index} className="text-xs">
+                          {source.url ? (
+                            <a
+                              href={source.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-[var(--color-primary)] hover:underline inline-flex items-center gap-1"
+                            >
+                              {source.title}
+                              {source.section && (
+                                <span className="text-[var(--color-text-muted)]">
+                                  ({source.section})
+                                </span>
+                              )}
+                              <ExternalLink className="w-3 h-3" />
+                            </a>
+                          ) : (
+                            <span className="text-[var(--color-text-muted)]">
+                              {source.title}
+                              {source.section && ` (${source.section})`}
+                              {source.topic && (
+                                <span className="ml-1 px-1.5 py-0.5 bg-[var(--color-primary)]/10 text-[var(--color-primary)] rounded">
+                                  {source.topic}
+                                </span>
+                              )}
+                            </span>
+                          )}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
             </div>
           </div>

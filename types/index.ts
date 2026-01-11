@@ -93,6 +93,22 @@ export interface KnowledgeMatch {
 }
 
 // ============================================================================
+// UI Types (for component props and API responses)
+// ============================================================================
+
+export interface HintSource {
+  title: string;
+  url?: string;
+  section?: string;
+  topic?: string;
+}
+
+export interface HintData {
+  hint: string;
+  sources: HintSource[];
+}
+
+// ============================================================================
 // Re-export Database type for convenience
 // ============================================================================
 
