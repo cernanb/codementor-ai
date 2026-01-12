@@ -13,12 +13,14 @@ describe("validateRequest", () => {
       body: JSON.stringify({
         challengeId: "123e4567-e89b-12d3-a456-426614174000",
         code: "function test() { return 1; }",
+        attemptId: "8aa094a6-297e-4f27-b3c6-9f74c33681c1",
       }),
     });
 
     const result = await validateRequest(request, schemas.submitCode);
 
     expect(result).toEqual({
+      attemptId: "8aa094a6-297e-4f27-b3c6-9f74c33681c1",
       challengeId: "123e4567-e89b-12d3-a456-426614174000",
       code: "function test() { return 1; }",
     });
@@ -85,6 +87,7 @@ describe("schemas", () => {
       const valid = schemas.submitCode.parse({
         challengeId: "123e4567-e89b-12d3-a456-426614174000",
         code: "function test() { return 1; }",
+        attemptId: "27c6b0ab-c69d-49f0-9886-13c88a0c513c",
       });
 
       expect(valid.challengeId).toBe("123e4567-e89b-12d3-a456-426614174000");
